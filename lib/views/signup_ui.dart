@@ -1,16 +1,15 @@
 // ignore_for_file: sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:iot_sau_pm_project/views/signup_ui.dart';
 
-class SigninUI extends StatefulWidget {
-  const SigninUI({super.key});
+class SignupUI extends StatefulWidget {
+  const SignupUI({super.key});
 
   @override
-  State<SigninUI> createState() => _SigninUIState();
+  State<SignupUI> createState() => _SignupUIState();
 }
 
-class _SigninUIState extends State<SigninUI> {
+class _SignupUIState extends State<SignupUI> {
   //สร้างตัวแปรสำหรับเปิดปิดรหัสผ่าน
   bool pwdVisible = true;
 
@@ -20,12 +19,21 @@ class _SigninUIState extends State<SigninUI> {
       appBar: AppBar(
         backgroundColor: Colors.red[900],
         title: Text(
-          'Signin PM APP',
+          'Signup PM APP',
           style: TextStyle(
             color: Colors.white,
           ),
         ),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -37,14 +45,63 @@ class _SigninUIState extends State<SigninUI> {
             child: Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.075,
                 ),
                 Image.asset(
                   'assets/images/logo.png',
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.35,
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: MediaQuery.of(context).size.height * 0.04,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'ชื่อ-นามสกุล',
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'fullname',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                    ),
+                    prefixIcon: Icon(
+                      Icons.list_alt,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.015,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'อีเมล์',
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'email',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                    ),
+                    prefixIcon: Icon(
+                      Icons.mail,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.015,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -68,7 +125,7 @@ class _SigninUIState extends State<SigninUI> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
+                  height: MediaQuery.of(context).size.height * 0.015,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -92,40 +149,23 @@ class _SigninUIState extends State<SigninUI> {
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
-                        //โค้ดที่มีผลต่อการแสดงผลให้เขียนอยู่ภายใน setState
                         setState(() {
                           pwdVisible = !pwdVisible;
                         });
                       },
                       icon: Icon(
-                        //Ternary opt. _____ ? _____ : ______
                         pwdVisible == true ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.015,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'ลืมรหัสผ่าน',
-                      style: TextStyle(
-                        color: Colors.purple,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.01,
+                  height: MediaQuery.of(context).size.height * 0.03,
                 ),
                 ElevatedButton(
                   onPressed: () {},
                   child: Text(
-                    'Signin',
+                    'Signup',
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -140,33 +180,6 @@ class _SigninUIState extends State<SigninUI> {
                       MediaQuery.of(context).size.height * 0.055,
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.025,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'ยังไม่มีบัญชี?',
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignupUI(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'ลงทะเบียน',
-                        style: TextStyle(
-                          color: Colors.red[900],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

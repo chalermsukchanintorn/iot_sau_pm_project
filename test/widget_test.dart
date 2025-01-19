@@ -13,7 +13,8 @@ import 'package:iot_sau_pm_project/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    //เรียกคลาสที่เรียกใช้งาน widget หลักของ app (MaterialApp)
+    await tester.pumpWidget(const IoTSauPMproject());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
