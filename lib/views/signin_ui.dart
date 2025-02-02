@@ -1,6 +1,9 @@
-// ignore_for_file: sort_child_properties_last
+// ignore_for_file: sort_child_properties_last, prefer_is_empty, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:iot_sau_pm_project/models/user.dart';
+import 'package:iot_sau_pm_project/services/call_user_api.dart';
+import 'package:iot_sau_pm_project/views/home_ui.dart';
 import 'package:iot_sau_pm_project/views/signup_ui.dart';
 
 class SigninUI extends StatefulWidget {
@@ -13,6 +16,37 @@ class SigninUI extends StatefulWidget {
 class _SigninUIState extends State<SigninUI> {
   //สร้างตัวแปรสำหรับเปิดปิดรหัสผ่าน
   bool pwdVisible = true;
+
+  //สร้าง instance/object เพื่อควบคุมตัว TextField
+  TextEditingController userNameCtrl = TextEditingController();
+  TextEditingController userPasswordCtrl = TextEditingController();
+
+  //สร้างเมธอดแสดงข้อความเตือน
+  void showWarningMSG(context, msg) async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'คำเตือน',
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          msg,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'ตกลง',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +90,7 @@ class _SigninUIState extends State<SigninUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userNameCtrl,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'username',
@@ -80,6 +115,7 @@ class _SigninUIState extends State<SigninUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userPasswordCtrl,
                   obscureText: pwdVisible,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -123,7 +159,37 @@ class _SigninUIState extends State<SigninUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //Validate UI
+                    if (userNameCtrl.text.trim().length == 0) {
+                      showWarningMSG(context, 'ป้อนชื่อผู้ใช้ด้วย');
+                    } else if (userPasswordCtrl.text.trim().length == 0) {
+                      showWarningMSG(context, 'ป้อนรหัสผ่านด้วย');
+                    } else {
+                      //เอาชื่อผู้ใช้รหัสผ่านไปตรวจสอบ
+                      //เรียกเมธอดเพื่อเรียกใช้ API ตรวจสอบข้อมูล user จาก user_tb
+                      //แพ็คข้อมูลที่จะส่งไปกับการเรียกใช้ API
+                      User user = User(
+                        userName: userNameCtrl.text,
+                        userPassword: userPasswordCtrl.text,
+                      );
+                      //เรียกเมธอดเพื่อเรียกใช้ API
+                      CallUserAPI.checkUserAPI(user).then((value) {
+                        if (value[0].message == "1") {
+                          //ชื่อผู้ใช้รหัสผ่านถูกต้อง เปิดไปหน้า HomeUI()
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeUI(),
+                            ),
+                          );
+                        } else {
+                          //ชื่อผู้ใช้รหัสผ่านไม่ถูกต้อง
+                          showWarningMSG(context, "ชื่อผู้ใช้ รหัสผ่านไม่ถูกต้อง");
+                        }
+                      });
+                    }
+                  },
                   child: Text(
                     'Signin',
                     style: TextStyle(

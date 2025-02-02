@@ -1,6 +1,8 @@
 // ignore_for_file: sort_child_properties_last
 
 import 'package:flutter/material.dart';
+import 'package:iot_sau_pm_project/models/user.dart';
+import 'package:iot_sau_pm_project/services/call_user_api.dart';
 
 class SignupUI extends StatefulWidget {
   const SignupUI({super.key});
@@ -12,6 +14,66 @@ class SignupUI extends StatefulWidget {
 class _SignupUIState extends State<SignupUI> {
   //สร้างตัวแปรสำหรับเปิดปิดรหัสผ่าน
   bool pwdVisible = true;
+
+  //สร้าง instance/object เพื่อควบคุมตัว TextField
+  TextEditingController userFullnameCtrl = TextEditingController();
+  TextEditingController userEmailCtrl = TextEditingController();
+  TextEditingController userNameCtrl = TextEditingController();
+  TextEditingController userPasswordCtrl = TextEditingController();
+
+  //สร้างเมธอดแสดงข้อความเตือน
+  void showWarningMSG(context, msg) async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'คำเตือน',
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          msg,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'ตกลง',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //สร้างเมธอดแสดงข้อความสำเร็จ
+  Future showCompleteMSG(context, msg) async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'ผลการทำงาน',
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          msg,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'ตกลง',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +126,7 @@ class _SignupUIState extends State<SignupUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userFullnameCtrl,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'fullname',
@@ -88,6 +151,7 @@ class _SignupUIState extends State<SignupUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userEmailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -113,6 +177,7 @@ class _SignupUIState extends State<SignupUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userNameCtrl,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'username',
@@ -137,6 +202,7 @@ class _SignupUIState extends State<SignupUI> {
                   height: MediaQuery.of(context).size.height * 0.01,
                 ),
                 TextField(
+                  controller: userPasswordCtrl,
                   obscureText: pwdVisible,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -163,7 +229,39 @@ class _SignupUIState extends State<SignupUI> {
                   height: MediaQuery.of(context).size.height * 0.03,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //Validate UI
+                    if (userFullnameCtrl.text.isEmpty) {
+                      showWarningMSG(context, 'กรุณากรอกชื่อ-นามสกุล');
+                    } else if (userEmailCtrl.text.isEmpty) {
+                      showWarningMSG(context, 'กรุณากรอกอีเมล์');
+                    } else if (userNameCtrl.text.isEmpty) {
+                      showWarningMSG(context, 'กรุณากรอกชื่อผู้ใช้');
+                    } else if (userPasswordCtrl.text.isEmpty) {
+                      showWarningMSG(context, 'กรุณากรอกรหัสผ่าน');
+                    } else {
+                      //เรียกเมธอดเพื่อเรียกใช้ API เพื่อบันทึกข้อมูล user ลงตาราง user_tb
+                      //แพ็คข้อมูลที่จะส่งไปกับการเรียกใช้ API
+                      User user = User(
+                        userFullname: userFullnameCtrl.text,
+                        userEmail: userEmailCtrl.text,
+                        userName: userNameCtrl.text,
+                        userPassword: userPasswordCtrl.text,
+                      );
+                      //เรียกเมธอดเพื่อเรียกใช้ API
+                      CallUserAPI.insertUserAPI(user).then((value) {
+                        if (value[0].message == "1") {
+                          //แสดงข้อความ Signup สําเร็จ
+                          showCompleteMSG(context, "ลงทะเบียนสำเร็จ").then((value) {
+                            Navigator.pop(context);
+                          });
+                        } else {
+                          //แสดงข้อความ Signup ไม่สําเร็จ
+                          showWarningMSG(context, "ลงทะเบียนไม่สำเร็จ");
+                        }
+                      });
+                    }
+                  },
                   child: Text(
                     'Signup',
                     style: TextStyle(
@@ -180,6 +278,9 @@ class _SignupUIState extends State<SignupUI> {
                       MediaQuery.of(context).size.height * 0.055,
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.08,
                 ),
               ],
             ),
